@@ -168,12 +168,12 @@ def showStartScreen():
         drawPressKeyMsg()
 
         if checkForKeyPress():
-            pygame.event.get() # clear event queue
+            pygame.event.get()
             return
         pygame.display.update()
         FPSCLOCK.tick(FPS)
-        degrees1 += 3 # rotate by 3 degrees each frame
-        degrees2 += 7 # rotate by 7 degrees each frame
+        degrees1 += 3
+        degrees2 += 7
 
 
 def terminate():
@@ -193,3 +193,59 @@ def test_not_ok(temp, worm):
         if temp['x'] == body['x'] and temp['y'] == body['y']:
             return True
     return False
+
+
+def showGameOverScreen():
+    gameOverFont = pygame.font.Font('freesansbold.ttf', 150)
+    gameSurf = gameOverFont.render('Game', True, WHITE)
+    overSurf = gameOverFont.render('Over', True, WHITE)
+    gameRect = gameSurf.get_rect()
+    overRect = overSurf.get_rect()
+    gameRect.midtop = (WINDOWWIDTH / 2, 10)
+    overRect.midtop = (WINDOWWIDTH / 2, gameRect.height + 10 + 25)
+
+    DISPLAYSURF.blit(gameSurf, gameRect)
+    DISPLAYSURF.blit(overSurf, overRect)
+    drawPressKeyMsg()
+    pygame.display.update()
+    pygame.time.wait(500)
+    checkForKeyPress()
+
+    while True:
+        if checkForKeyPress():
+            pygame.event.get()
+            return
+
+def drawScore(score):
+    scoreSurf = BASICFONT.render('Score: %s' % (score), True, WHITE)
+    scoreRect = scoreSurf.get_rect()
+    scoreRect.topleft = (WINDOWWIDTH - 120, 10)
+    DISPLAYSURF.blit(scoreSurf, scoreRect)
+
+
+def drawWorm(wormCoords):
+    for coord in wormCoords:
+        x = coord['x'] * CELLSIZE
+        y = coord['y'] * CELLSIZE
+        wormSegmentRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
+        pygame.draw.rect(DISPLAYSURF, DARKGREEN, wormSegmentRect)
+        wormInnerSegmentRect = pygame.Rect(x + 4, y + 4, CELLSIZE - 8, CELLSIZE - 8)
+        pygame.draw.rect(DISPLAYSURF, GREEN, wormInnerSegmentRect)
+
+
+def drawApple(coord):
+    x = coord['x'] * CELLSIZE
+    y = coord['y'] * CELLSIZE
+    appleRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
+    pygame.draw.rect(DISPLAYSURF, RED, appleRect)
+
+
+def drawGrid():
+    for x in range(0, WINDOWWIDTH, CELLSIZE): # draw vertical lines
+        pygame.draw.line(DISPLAYSURF, DARKGRAY, (x, 0), (x, WINDOWHEIGHT))
+    for y in range(0, WINDOWHEIGHT, CELLSIZE): # draw horizontal lines
+        pygame.draw.line(DISPLAYSURF, DARKGRAY, (0, y), (WINDOWWIDTH, y))
+
+
+if __name__ == '__main__':
+    main()
