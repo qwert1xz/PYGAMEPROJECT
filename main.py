@@ -26,7 +26,7 @@ RIGHT = 'right'
 
 HEAD = 0
 
-def main():
+def main(): #отображение стартового окна, запуск игры, показ игры
     global FPSCLOCK, DISPLAYSURF, BASICFONT
 
     pygame.init()
@@ -56,7 +56,7 @@ def main():
         showGameOverScreen()
 
 
-def runGame():
+def runGame(): #игровой процесс
     startx = random.randint(5, CELLWIDTH - 6)
     starty = random.randint(5, CELLHEIGHT - 6)
     wormCoords = [{'x': startx,     'y': starty},
@@ -64,14 +64,14 @@ def runGame():
                   {'x': startx - 2, 'y': starty}]
     direction = RIGHT
 
-    apple = getRandomLocation(wormCoords)
+    apple = getRandomLocation(wormCoords) #первое яблоко случайным образом в клетке
 
     while True:
         pre_direction = direction
         for event in pygame.event.get():
             if event.type == QUIT:
                 terminate()
-            elif event.type == KEYDOWN:
+            elif event.type == KEYDOWN: #движение червя
                 if (event.key == K_LEFT or event.key == K_a) and direction != RIGHT:
                     direction = LEFT
                 elif (event.key == K_RIGHT or event.key == K_d) and direction != LEFT:
@@ -89,11 +89,11 @@ def runGame():
                 return
 
         if wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
-            apple = getRandomLocation(wormCoords)
+            apple = getRandomLocation(wormCoords) #если червь съел первое яблоко
         else:
             del wormCoords[-1]
 
-        if not examine_direction(direction, pre_direction):
+        if not examine_direction(direction, pre_direction): #проверка нового движения червя
             direction = pre_direction
         if direction == UP:
             newHead = {'x': wormCoords[HEAD]['x'], 'y': wormCoords[HEAD]['y'] - 1}
@@ -112,7 +112,7 @@ def runGame():
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
-def examine_direction(temp , direction):
+def examine_direction(temp , direction): #проверяет, противоположно ли новое направление змеи ее прошлому направлению
     if direction == UP:
         if temp == DOWN:
             return False
@@ -127,14 +127,14 @@ def examine_direction(temp , direction):
             return False
     return True
 
-def drawPressKeyMsg():
+def drawPressKeyMsg(): #отображает сообщение, предлагающее пользователю нажать на клавишу, чтобы начать игру
     pressKeySurf = BASICFONT.render('Press a key to play.', True, DARKGRAY)
     pressKeyRect = pressKeySurf.get_rect()
     pressKeyRect.topleft = (WINDOWWIDTH - 200, WINDOWHEIGHT - 30)
     DISPLAYSURF.blit(pressKeySurf, pressKeyRect)
 
 
-def checkForKeyPress():
+def checkForKeyPress(): #проверяет была ли нажата клавиша
     if len(pygame.event.get(QUIT)) > 0:
         terminate()
 
@@ -146,7 +146,7 @@ def checkForKeyPress():
     return keyUpEvents[0].key
 
 
-def showStartScreen():
+def showStartScreen():  #отображает название игры и сообщение о необходимости нажать клавишу для запуска игры
     titleFont = pygame.font.Font('freesansbold.ttf', 100)
     titleSurf1 = titleFont.render('Snaky!', True, WHITE, DARKGREEN)
     titleSurf2 = titleFont.render('Snaky!', True, GREEN)
@@ -176,26 +176,27 @@ def showStartScreen():
         degrees2 += 7
 
 
-def terminate():
+def terminate(): #закрывает библиотеку pygame и выходит из программы
     pygame.quit()
     sys.exit()
 
 
 
-def getRandomLocation(worm):
+def getRandomLocation(worm): #генерирует случайное местоположение яблока
     temp = {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
     while test_not_ok(temp, worm):
         temp = {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
     return temp
 
-def test_not_ok(temp, worm):
+def test_not_ok(temp, worm): #проверяет занято ли уже змеей данное место
     for body in worm:
         if temp['x'] == body['x'] and temp['y'] == body['y']:
             return True
     return False
 
 
-def showGameOverScreen():
+def showGameOverScreen(): #отображает сообщение об окончании игры
+                          # и ждет, пока пользователь нажмет кнопку, чтобы вернуться на стартовый экран
     gameOverFont = pygame.font.Font('freesansbold.ttf', 150)
     gameSurf = gameOverFont.render('Game', True, WHITE)
     overSurf = gameOverFont.render('Over', True, WHITE)
@@ -223,7 +224,7 @@ def drawScore(score):
     DISPLAYSURF.blit(scoreSurf, scoreRect)
 
 
-def drawWorm(wormCoords):
+def drawWorm(wormCoords): #рисует змею, серию прямоугольников
     for coord in wormCoords:
         x = coord['x'] * CELLSIZE
         y = coord['y'] * CELLSIZE
@@ -233,17 +234,17 @@ def drawWorm(wormCoords):
         pygame.draw.rect(DISPLAYSURF, GREEN, wormInnerSegmentRect)
 
 
-def drawApple(coord):
+def drawApple(coord): #рисует яблоко, один прямоугольник
     x = coord['x'] * CELLSIZE
     y = coord['y'] * CELLSIZE
     appleRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
     pygame.draw.rect(DISPLAYSURF, RED, appleRect)
 
 
-def drawGrid():
-    for x in range(0, WINDOWWIDTH, CELLSIZE): # draw vertical lines
+def drawGrid(): #делит экран на ячейки
+    for x in range(0, WINDOWWIDTH, CELLSIZE):
         pygame.draw.line(DISPLAYSURF, DARKGRAY, (x, 0), (x, WINDOWHEIGHT))
-    for y in range(0, WINDOWHEIGHT, CELLSIZE): # draw horizontal lines
+    for y in range(0, WINDOWHEIGHT, CELLSIZE):
         pygame.draw.line(DISPLAYSURF, DARKGRAY, (0, y), (WINDOWWIDTH, y))
 
 
