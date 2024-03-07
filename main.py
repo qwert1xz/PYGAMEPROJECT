@@ -71,7 +71,7 @@ def runGame(): #игровой процесс
         for event in pygame.event.get():
             if event.type == QUIT:
                 terminate()
-            elif event.type == KEYDOWN: #движение червя
+            elif event.type == KEYDOWN: #движение червя.
                 if (event.key == K_LEFT or event.key == K_a) and direction != RIGHT:
                     direction = LEFT
                 elif (event.key == K_RIGHT or event.key == K_d) and direction != LEFT:
